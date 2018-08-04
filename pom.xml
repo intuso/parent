@@ -1,0 +1,345 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <!--
+
+        This parent pom is intended to standardise the versions of third party plugins and dependencies that we use in our projects.
+        It probably shouldn't include any intuso dependencies in it as in general these can be controlled more easily as to
+        what external dependencies they use.
+
+        We also use this parent pom to setup some of the common build/scm etc configuration that needs to go in each project
+
+        Naming conventions:
+        groupId: com.intuso.{project}, eg com.intuso.utilities
+        artifactId: {project}-{component}, eg utilities-webserver
+        name: Intuso {projectName} {componentName}, Intuso Utilities Web Server
+    -->
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.intuso</groupId>
+    <artifactId>parent</artifactId>
+    <packaging>pom</packaging>
+    <version>1.0.0-SNAPSHOT</version>
+    <name>Intuso Parent</name>
+
+    <url>https://intuso.com</url>
+
+    <organization>
+        <name>Intuso</name>
+        <url>https://intuso.com</url>
+    </organization>
+
+    <properties>
+        <!-- General build stuff -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.build.timestamp.format>yyyy-MM-dd'T'HH:mm:ss.SSSZ</maven.build.timestamp.format>
+        <buildTimestamp>${maven.build.timestamp}</buildTimestamp>
+
+        <!-- Dependency versions -->
+
+        <!-- Javax -->
+        <javax.ws.rs.version>2.0.1</javax.ws.rs.version><!-- Checked 17/02/2017 -->
+        <javax.jms.version>1.1</javax.jms.version><!-- Checked 17/02/2017 -->
+
+        <!-- HTTP/REST/OAuth related third party dependencies -->
+        <jersey.version>2.25.1</jersey.version><!-- Checked 17/02/2017 -->
+        <jackson.version>2.8.4</jackson.version><!-- Inferred from jersey-jackson -->
+        <jetty.version>9.4.5.v20170502</jetty.version><!-- Checked 22/05/2017 -->
+        <glassfish.version>2.5.0-b32</glassfish.version><!-- Checked 17/02/2017 -->
+        <oltu.version>1.0.2</oltu.version><!-- Checked 17/02/2017 -->
+
+        <!-- Serialisation -->
+        <gson.version>2.8.0</gson.version><!-- Checked 17/02/2017 -->
+
+        <!-- Messaging -->
+        <activemq.version>5.14.3</activemq.version><!-- Checked 17/02/2017 -->
+
+        <!-- Logging -->
+        <logback.version>1.2.1</logback.version><!-- Checked 17/02/2017 -->
+        <slf4j.version>1.7.23</slf4j.version><!-- Checked 17/02/2017 -->
+
+        <!-- Other third party dependencies -->
+        <guava.version>21.0</guava.version><!-- Checked 17/02/2017 -->
+        <guice.version>4.1.0</guice.version><!-- Checked 17/02/2017 -->
+        <jsr305.version>3.0.1</jsr305.version><!-- Checked 17/02/2017 -->
+    </properties>
+
+    <!-- We don't force any dependencies on any project. Everything is specified here in dependency management instead, and included in a project only when it needs it. Versions are controlled with properties in case a project needs a dependency that we haven't listed in here but uses the same version, eg guice vs guice-multibindings and other guice extensions that we don't list here -->
+    <dependencyManagement>
+        <dependencies>
+
+            <!-- Java REST Annotations -->
+            <dependency>
+                <groupId>javax.ws.rs</groupId>
+                <artifactId>javax.ws.rs-api</artifactId>
+                <version>${javax.ws.rs.version}</version>
+            </dependency>
+
+            <!-- Servlet API for Feed Listener Socket. Probably a better of way of doing this in the server so we don't need the dependency here -->
+            <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>javax.servlet-api</artifactId>
+                <version>3.1.0</version>
+            </dependency>
+
+            <!-- JMS api -->
+            <dependency>
+                <groupId>javax.jms</groupId>
+                <artifactId>jms</artifactId>
+                <version>${javax.jms.version}</version>
+            </dependency>
+
+            <!-- Jersey -->
+            <dependency>
+                <groupId>org.glassfish.jersey.media</groupId>
+                <artifactId>jersey-media-json-jackson</artifactId>
+                <version>${jersey.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jersey.containers</groupId>
+                <artifactId>jersey-container-servlet</artifactId>
+                <version>${jersey.version}</version>
+            </dependency>
+
+            <!-- Jackson -->
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-annotations</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+
+            <!-- Jetty webserver -->
+            <dependency>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-server</artifactId>
+                <version>${jetty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-servlet</artifactId>
+                <version>${jetty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.jetty.websocket</groupId>
+                <artifactId>websocket-server</artifactId>
+                <version>${jetty.version}</version>
+            </dependency>
+
+            <!-- HK2 stuff -->
+            <dependency>
+                <groupId>org.glassfish.hk2</groupId>
+                <artifactId>guice-bridge</artifactId>
+                <version>${glassfish.version}</version>
+            </dependency>
+
+            <!-- Oltu for OAuth stuff -->
+            <dependency>
+                <groupId>org.apache.oltu.oauth2</groupId>
+                <artifactId>org.apache.oltu.oauth2.authzserver</artifactId>
+                <version>${oltu.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.oltu.oauth2</groupId>
+                <artifactId>org.apache.oltu.oauth2.resourceserver</artifactId>
+                <version>${oltu.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.oltu.oauth2</groupId>
+                <artifactId>org.apache.oltu.oauth2.client</artifactId>
+                <version>${oltu.version}</version>
+            </dependency>
+
+            <!-- Gson for json serialisation -->
+            <dependency>
+                <groupId>com.google.code.gson</groupId>
+                <artifactId>gson</artifactId>
+                <version>${gson.version}</version>
+            </dependency>
+
+            <!-- ActiveMQ -->
+            <dependency>
+                <groupId>org.apache.activemq</groupId>
+                <artifactId>activemq-client</artifactId>
+                <version>${activemq.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.activemq</groupId>
+                <artifactId>activemq-broker</artifactId>
+                <version>${activemq.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.activemq</groupId>
+                <artifactId>activemq-kahadb-store</artifactId>
+                <version>${activemq.version}</version>
+            </dependency>
+
+            <!-- Logging -->
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${logback.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-core</artifactId>
+                <version>${logback.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+
+            <!-- Guava -->
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
+            </dependency>
+
+            <!-- Guice -->
+            <dependency>
+                <groupId>com.google.inject</groupId>
+                <artifactId>guice</artifactId>
+                <version>${guice.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.inject.extensions</groupId>
+                <artifactId>guice-multibindings</artifactId>
+                <version>${guice.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.inject.extensions</groupId>
+                <artifactId>guice-assistedinject</artifactId>
+                <version>${guice.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.inject.extensions</groupId>
+                <artifactId>guice-servlet</artifactId>
+                <version>${guice.version}</version>
+            </dependency>
+
+            <!-- JSR305 mostly for @Nullable annotation -->
+            <dependency>
+                <groupId>com.google.code.findbugs</groupId>
+                <artifactId>jsr305</artifactId>
+                <version>${jsr305.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+
+        <!-- Everything in this section is included in every project that uses this as a parent -->
+        <plugins>
+
+            <!-- Build everything at java 8 level -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.5.1</version>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+
+            <!-- Build a sources jar. Makes sources available more easily in other projects -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.0.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+
+        <!-- Everything in this section is optional in each project, but is defined in here to help make configuration etc similar/the same across all the projects that use this as a parent -->
+        <pluginManagement>
+            <plugins>
+
+                <!-- Javadocs -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>2.10.4</version>
+                    <configuration>
+                        <doctitle>${project.name} Documentation</doctitle>
+                        <windowtitle>${project.name} Documentation</windowtitle>
+                        <includeDependencySources>true</includeDependencySources>
+                    </configuration>
+                </plugin>
+
+                <!-- Enforce single version of dependencies -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-enforcer-plugin</artifactId>
+                    <version>1.4.1</version>
+                    <executions>
+                        <execution>
+                            <id>enforce</id>
+                            <phase>validate</phase>
+                            <goals>
+                                <goal>enforce</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <rules>
+                            <dependencyConvergence />
+                            <enforceBytecodeVersion>
+                                <maxJdkVersion>1.8</maxJdkVersion>
+                            </enforceBytecodeVersion>
+                            <bannedDependencies>
+                                <excludes>
+                                    <exclude>commons-logging:commons-logging</exclude>
+                                    <exclude>org.apache.logging.log4j.osgi:log4j</exclude>
+                                    <exclude>org.apache.logging.log4j:log4j</exclude>
+                                    <exclude>log4j:log4j</exclude>
+                                </excludes>
+                            </bannedDependencies>
+                        </rules>
+                    </configuration>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.codehaus.mojo</groupId>
+                            <artifactId>extra-enforcer-rules</artifactId>
+                            <version>1.0-beta-1</version>
+                        </dependency>
+                    </dependencies>
+                </plugin>
+
+                <!-- OSGI stuff -->
+                <plugin>
+                    <groupId>org.apache.felix</groupId>
+                    <artifactId>maven-bundle-plugin</artifactId>
+                    <version>3.2.0</version>
+                    <extensions>true</extensions>
+                    <executions>
+                        <execution>
+                            <id>bundle-manifest</id>
+                            <phase>process-classes</phase>
+                            <goals>
+                                <goal>manifest</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <instructions>
+                            <Import-Package>*</Import-Package>
+                        </instructions>
+                    </configuration>
+                </plugin>
+
+            </plugins>
+        </pluginManagement>
+    </build>
+
+</project>
